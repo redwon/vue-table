@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, itemIndex) in tableData">
+      <template v-for="(item, itemIndex) in items">
         <tr
           class="table-row"
           :key="itemIndex">
@@ -35,28 +35,40 @@
 </template>
 
 <script>
-import provider from '../providers/tableDataProvider';
-
 export default {
     name: 'vue-table',
     data() {
       return {
-          fields: null,
-          tableData: null,
+          items: () => [],
           sortBy: {
-            field: null
+            field: null,
+            order: 'asc'
           }
       };
     },
+    props: {
+      fields: Object,
+      tableData: Array
+    },
     mounted() {
-      const data = provider.getData();
-      this.fields = data.titles;
-      this.tableData = data.items;
+      this.processData(this.tableData);
     },
     methods: {
+      processData(data) {
+        this.items = data.slice();
+      },
       orderBy(key) {
-        this.sortBy.field = key;
-        this.tableData.sort(this.compare);
+        if (this.sortBy.field === key) {
+          this.toggleOrder();
+        } else {
+          this.sortBy.field = key;
+          this.sortBy.order = 'asc';
+          this.items.sort(this.compare);
+        }
+      },
+      toggleOrder() {
+        this.items.reverse();
+        this.sortBy.order = this.sortBy.order === 'asc' ? 'desc' : 'asc';
       },
       compare(item1, item2) {
         const key = this.sortBy.field;
@@ -66,6 +78,17 @@ export default {
           return 1;
         return 0;
       }
+    },
+    watch: {
+      tableData(val) {
+        this.processData(val);
+      }
     }
 };
 </script>
+
+<style lang="scss">
+  .table-head {
+    cursor: pointer;
+  }
+</style>

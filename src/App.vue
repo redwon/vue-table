@@ -2,18 +2,33 @@
   <div id="app" class="app">
     <h2>Vue Table</h2>
     <section class="section">
-      <VueTable/>
+      <VueTable
+        :fields="tableFields"
+        :tableData="tableData"
+      />
     </section>
   </div>
 </template>
 
 <script>
+import provider from './providers/tableDataProvider';
 import VueTable from './components/VueTable.vue';
 
 export default {
     name: 'app',
     components: {
         VueTable
+    },
+    data() {
+      return {
+        tableFields: null,
+        tableData: null
+      }
+    },
+    mounted() {
+      const data = provider.getData();
+      this.tableFields = data.titles;
+      this.tableData = data.items;
     }
 };
 </script>
