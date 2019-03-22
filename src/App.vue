@@ -4,7 +4,11 @@
     <section class="section">
       <VueTable
         :fields="tableFields"
-        :tableData="tableData"
+        :tableData="paginatedItems"
+      />
+      <VueTablePaginate
+        :items="tableData"
+        @paginatedItems="onPaginatedItems"
       />
     </section>
   </div>
@@ -13,22 +17,30 @@
 <script>
 import provider from './providers/tableDataProvider';
 import VueTable from './components/VueTable.vue';
+import VueTablePaginate from './components/VueTablePaginate.vue';
 
 export default {
     name: 'app',
     components: {
-        VueTable
+        VueTable,
+        VueTablePaginate
     },
     data() {
       return {
         tableFields: null,
-        tableData: null
+        tableData: null,
+        paginatedItems: null
       }
     },
     mounted() {
-      const data = provider.getData();
-      this.tableFields = data.titles;
-      this.tableData = data.items;
+      const { titles, items } = provider.getData();
+      this.tableFields = titles;
+      this.tableData = items;
+    },
+    methods: {
+      onPaginatedItems(items) {
+        this.paginatedItems = items;
+      }
     }
 };
 </script>

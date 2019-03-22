@@ -101,6 +101,7 @@ export default {
     },
     methods: {
       processData(data) {
+        this.resetOrder();
         if(data) {
           this.items = data.slice();
         } else {
@@ -127,11 +128,20 @@ export default {
       },
       compare(item1, item2) {
         const key = this.sortBy.field;
-        if (item1[key] < item2[key])
-          return -1;
-        if (item1[key] > item2[key])
-          return 1;
-        return 0;
+
+        if (isNaN(item1[key])) {
+          if (isNaN(item2[key])) { // item1 and item2 are strings
+            return item1[key].localeCompare(item2[key]);
+          } else {                 // item1 string and item2 number
+            return 1;              // item1 > item2
+          }
+        } else {
+          if (isNaN(item2[key])) { // item1 number and item2 string
+            return -1;             // item1 < item2
+          } else {                 // item1 and item2 are numbers
+            return parseFloat(item1[key]) - parseFloat(item2[key]);
+          }
+        }
       },
       filterBy(event) {
         this.resetOrder();
